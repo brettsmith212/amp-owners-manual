@@ -1,5 +1,19 @@
 /* Base styles and content styles */
 
+/* Amp logo styling */
+.amp-logo {
+    height: 24px;
+    width: 24px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.menu-title {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
 :root {
     /* Browser default font-size is 16px, this way 1 rem = 10px */
     font-size: 62.5%;
