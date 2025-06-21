@@ -1,0 +1,5 @@
+[book]
+authors = ["Brett Smith"]
+language = "en"
+src = "src"
+title = "Amp Owners Manual"
