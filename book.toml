@@ -3,3 +3,10 @@ authors = ["Brett Smith"]
 language = "en"
 src = "src"
 title = "Amp Owners Manual"
+description = "The comprehensive guide to using Amp, the agentic coding tool by Sourcegraph"
+
+[output.html]
+default-theme = "amp-dark"
+preferred-dark-theme = "amp-dark"
+git-repository-url = "https://github.com/brettsmith212/amp-owners-manual"
+edit-url-template = "https://github.com/brettsmith212/amp-owners-manual/edit/main/src/{path}"

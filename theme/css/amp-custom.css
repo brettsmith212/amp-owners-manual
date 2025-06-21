@@ -1,0 +1,192 @@
+/* Amp Custom Styling */
+
+/* Enhanced typography */
+.content h1 {
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    color: var(--fg);
+    border-bottom: 2px solid var(--sidebar-active);
+    padding-bottom: 1rem;
+}
+
+.content h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--fg);
+}
+
+.content h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--sidebar-active);
+}
+
+/* Enhanced code blocks */
+.content pre {
+    border-radius: 8px;
+    border: 1px solid var(--table-border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1.5rem 0;
+}
+
+.content code:not(.hljs) {
+    background-color: var(--quote-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--inline-code-color);
+    font-weight: 600;
+}
+
+/* Enhanced tables */
+.content table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 2rem 0;
+}
+
+.content table th {
+    background-color: var(--sidebar-active);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+}
+
+.content table td {
+    padding: 0.8rem 1rem;
+}
+
+/* Enhanced blockquotes */
+.content blockquote {
+    border-left: 4px solid var(--sidebar-active);
+    background-color: var(--quote-bg);
+    border-radius: 0 6px 6px 0;
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    font-style: italic;
+}
+
+/* Callout boxes */
+.content .warning,
+.content .note,
+.content .tip {
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+}
+
+.content .warning {
+    background-color: #fff5f5;
+    border-left-color: #f56565;
+}
+
+.content .note {
+    background-color: #f0f9ff;
+    border-left-color: #3b82f6;
+}
+
+.content .tip {
+    background-color: #f0fff4;
+    border-left-color: #10b981;
+}
+
+/* Enhanced navigation */
+.nav-chapters {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-spacer);
+}
+
+.chapter li.chapter-item {
+    padding: 0.3rem 0;
+}
+
+.chapter li.chapter-item a {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    margin: 0 1rem;
+    transition: all 0.2s ease;
+    display: block;
+    text-decoration: none;
+}
+
+.chapter li.chapter-item a:hover {
+    background-color: var(--theme-hover);
+    transform: translateX(2px);
+}
+
+.chapter li.chapter-item a.active {
+    background-color: var(--sidebar-active);
+    color: white !important;
+    font-weight: 600;
+}
+
+/* Enhanced menu bar */
+.menu-bar {
+    background-color: var(--bg);
+    border-bottom: 1px solid var(--sidebar-spacer);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.menu-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--fg);
+}
+
+/* Better spacing and readability */
+.content {
+    line-height: 1.7;
+    max-width: 800px;
+}
+
+.content p {
+    margin-bottom: 1.2rem;
+}
+
+.content ul, .content ol {
+    margin-bottom: 1.5rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Enhanced links */
+.content a {
+    color: var(--links);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s ease;
+}
+
+.content a:hover {
+    border-bottom-color: var(--links);
+}
+
+/* Print styles */
+@media print {
+    .content h1 {
+        border-bottom: 2px solid #333;
+        color: #333;
+    }
+    
+    .content h3 {
+        color: #333;
+    }
+    
+    .content table th {
+        background-color: #f0f0f0 !important;
+        color: #333 !important;
+    }
+}
