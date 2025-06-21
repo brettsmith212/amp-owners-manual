@@ -1,7 +1,7 @@
 services:
-  mdbook-prod:
+  amp-owners-manual:
     build: .
-    container_name: mdbook-prod
+    container_name: amp-owners-manual
     ports:
       - "3000:3000"
     restart: unless-stopped
