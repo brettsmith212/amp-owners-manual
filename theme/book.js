@@ -514,6 +514,48 @@ aria-label="Show hidden lines"></button>';
     });
 })();
 
+(function terminalMode() {
+    const html = document.querySelector('html');
+    const terminalToggleButton = document.getElementById('terminal-toggle');
+    const terminalToggleText = document.getElementById('terminal-toggle-text');
+    
+    // Check if terminal mode is enabled
+    function isTerminalMode() {
+        try {
+            return localStorage.getItem('mdbook-terminal-mode') === 'true';
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // Set terminal mode state
+    function setTerminalMode(enabled) {
+        try {
+            localStorage.setItem('mdbook-terminal-mode', enabled.toString());
+        } catch (e) {
+            // ignore error.
+        }
+        
+        if (enabled) {
+            html.classList.add('terminal-mode');
+            terminalToggleText.textContent = 'Boring Mode';
+            terminalToggleButton.setAttribute('title', 'Exit Terminal Mode');
+        } else {
+            html.classList.remove('terminal-mode');
+            terminalToggleText.textContent = 'Terminal Mode';
+            terminalToggleButton.setAttribute('title', 'Toggle Terminal Mode');
+        }
+    }
+    
+    // Initialize terminal mode
+    setTerminalMode(isTerminalMode());
+    
+    // Toggle terminal mode on button click
+    terminalToggleButton.addEventListener('click', function() {
+        setTerminalMode(!isTerminalMode());
+    });
+})();
+
 (function sidebar() {
     const body = document.querySelector('body');
     const sidebar = document.getElementById('sidebar');
