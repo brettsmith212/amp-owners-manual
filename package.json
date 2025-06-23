@@ -1,0 +1,29 @@
+{
+  "name": "amp-owners-manual",
+  "version": "1.0.0",
+  "description": "The comprehensive guide to using Amp, the agentic coding tool by Sourcegraph",
+  "scripts": {
+    "build": "mdbook build",
+    "serve": "mdbook serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brettsmith212/amp-owners-manual"
+  },
+  "author": "Brett Smith",
+  "license": "MIT",
+  "dependencies": {
+    "@xterm/xterm": "^5.5.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0"
+  },
+  "devDependencies": {},
+  "notes": {
+    "xterm-cdn": {
+      "xterm": "https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js",
+      "xterm-css": "https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css",
+      "addon-fit": "https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js",
+      "addon-web-links": "https://cdn.jsdelivr.net/npm/@xterm/addon-web-links@0.11.0/lib/addon-web-links.js"
+    }
+  }
+}
