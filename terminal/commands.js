@@ -225,10 +225,25 @@ class CommandProcessor {
             return { success: false, output: `less: ${filename}: Is a directory` };
         }
         
+        if (!fileNode.node.sourcePath) {
+            return { success: false, output: `less: ${filename}: No source path available` };
+        }
+        
+        if (!this.filesystem.contentLoader) {
+            return { success: false, output: `less: ${filename}: Content loader not initialized` };
+        }
+        
         try {
             const content = await this.filesystem.contentLoader.loadContent(fileNode.node.sourcePath);
-            // For now, just display like cat. In future steps, we can add pagination
-            return { success: true, output: content + '\n(END)' };
+            
+            // Use pager for less command if available
+            if (this.terminal.pagerSystem) {
+                this.terminal.pagerSystem.enterPager(content, filename);
+                return { success: true, output: '', usePager: true };
+            } else {
+                // Fallback to direct output
+                return { success: true, output: content + '\n(END)' };
+            }
         } catch (error) {
             return { success: false, output: `less: ${filename}: ${error.message}` };
         }
