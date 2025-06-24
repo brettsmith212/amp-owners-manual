@@ -463,7 +463,15 @@ class CommandProcessor {
         }
 
         const formattedContent = this.manPageSystem.formatManPage(manPage);
-        return { success: true, output: formattedContent };
+        
+        // Use pager for man pages if available
+        if (this.terminal.pagerSystem) {
+            this.terminal.pagerSystem.enterPager(formattedContent, `Manual page ${topic.toUpperCase()}(1)`);
+            return { success: true, output: '', usePager: true };
+        } else {
+            // Fallback to direct output
+            return { success: true, output: formattedContent };
+        }
     }
 
     /**

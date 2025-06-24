@@ -14,6 +14,7 @@ class TerminalController {
         this.filesystem = null;
         this.commandProcessor = null;
         this.completionSystem = null;
+        this.pagerSystem = null;
         this.commandHistory = [];
         this.historyIndex = -1;
         this.currentInput = '';
@@ -125,6 +126,13 @@ class TerminalController {
         } else {
             console.warn('CompletionSystem not available');
         }
+
+        // Initialize pager system
+        if (typeof PagerSystem !== 'undefined') {
+            this.pagerSystem = new PagerSystem(this);
+        } else {
+            console.warn('PagerSystem not available');
+        }
         
         console.log('Filesystem and command processor initialized');
     }
@@ -145,6 +153,12 @@ class TerminalController {
      * Handle user input from terminal
      */
     handleInput(data) {
+        // Check if pager is active first
+        if (this.pagerSystem && this.pagerSystem.isActivePager()) {
+            const handled = this.pagerSystem.handleInput(data);
+            if (handled) return; // Pager handled the input
+        }
+
         const code = data.charCodeAt(0);
         
         // Handle special keys
@@ -331,6 +345,13 @@ class TerminalController {
         if (this.commandProcessor) {
             try {
                 const result = await this.commandProcessor.processCommand(command);
+                
+                // Check if command used pager (like man pages)
+                if (result.usePager) {
+                    // Don't show prompt - pager is handling display
+                    return;
+                }
+                
                 if (result.output) {
                     // Handle multi-line output properly
                     const lines = result.output.split('\n');
