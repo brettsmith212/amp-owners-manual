@@ -26,19 +26,27 @@ class TerminalController {
             // Create terminal instance with configuration
             this.terminal = new Terminal({
                 theme: {
-                    background: '#001100',
-                    foreground: '#00ff00',
-                    cursor: '#00ff00',
-                    cursorAccent: '#001100',
-                    selection: 'rgba(0, 255, 0, 0.3)',
-                    black: '#001100',
-                    red: '#ff0000',
-                    green: '#00ff00',
-                    yellow: '#ffff00',
-                    blue: '#0066ff',
-                    magenta: '#ff00ff',
-                    cyan: '#00ffff',
-                    white: '#ffffff'
+                    background: '#0c0c0c',
+                    foreground: '#c0c0c0',
+                    cursor: '#808080',
+                    cursorAccent: '#0c0c0c',
+                    selection: 'rgba(128, 128, 128, 0.3)',
+                    black: '#0c0c0c',
+                    red: '#808080',
+                    green: '#808080',
+                    yellow: '#808080',
+                    blue: '#808080',
+                    magenta: '#808080',
+                    cyan: '#808080',
+                    white: '#c0c0c0',
+                    brightBlack: '#404040',
+                    brightRed: '#808080',
+                    brightGreen: '#a0a0a0',
+                    brightYellow: '#808080',
+                    brightBlue: '#808080',
+                    brightMagenta: '#808080',
+                    brightCyan: '#808080',
+                    brightWhite: '#ffffff'
                 },
                 fontFamily: '"Courier New", monospace',
                 fontSize: 14,
@@ -76,9 +84,9 @@ class TerminalController {
             this.isInitialized = true;
 
             // Display welcome message
-            this.terminal.writeln('\x1b[32mAmp Owners Manual Terminal\x1b[0m');
-            this.terminal.writeln('\x1b[36mWelcome to the interactive documentation terminal.\x1b[0m');
-            this.terminal.writeln('\x1b[33mType "help" for available commands.\x1b[0m');
+            this.terminal.writeln('Amp Owners Manual Terminal');
+            this.terminal.writeln('Welcome to the interactive documentation terminal.');
+            this.terminal.writeln('Type "help" for available commands.');
             this.terminal.writeln('');
 
             // Set up input handling
@@ -190,7 +198,7 @@ class TerminalController {
      */
     executeCommand(command) {
         if (command === 'help') {
-            this.terminal.writeln('\x1b[32mAvailable commands:\x1b[0m');
+            this.terminal.writeln('Available commands:');
             this.terminal.writeln('  help    - Show this help message');
             this.terminal.writeln('  clear   - Clear the terminal screen');
             this.terminal.writeln('  exit    - Exit terminal mode');
@@ -203,7 +211,7 @@ class TerminalController {
             document.dispatchEvent(event);
             return;
         } else {
-            this.terminal.writeln(`\x1b[31mCommand not found: ${command}\x1b[0m`);
+            this.terminal.writeln(`Command not found: ${command}`);
             this.terminal.writeln('Type "help" for available commands.');
         }
         
@@ -224,7 +232,7 @@ class TerminalController {
      */
     showPrompt() {
         if (this.terminal && this.isInitialized) {
-            this.terminal.write('\x1b[32m$ \x1b[0m');
+            this.terminal.write('$ ');
         }
     }
 

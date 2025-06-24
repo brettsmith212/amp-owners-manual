@@ -35,7 +35,7 @@ html.terminal-mode body {
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: #000000 !important;
+    background: #0c0c0c !important;
     z-index: 99999 !important;
     display: flex;
     flex-direction: column;
@@ -49,25 +49,45 @@ html.terminal-mode body {
 .terminal-header {
     background: #1a1a1a;
     padding: 1rem 2rem;
-    border-bottom: 2px solid #00ff00;
+    border-bottom: 1px solid #404040;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     min-height: 60px;
+    position: relative;
 }
 
 .terminal-title {
-    color: #00ff00;
+    color: #a0a0a0 !important;
     font-family: "Courier New", "Lucida Console", monospace;
     font-size: 1.5rem;
     margin: 0;
-    text-shadow: 0 0 10px #00ff00;
+    text-shadow: none;
+    text-decoration: none !important;
+    font-weight: normal;
+    pointer-events: none;
+    cursor: default;
+}
+
+.terminal-title:hover {
+    color: #a0a0a0 !important;
+    text-decoration: none !important;
+}
+
+.terminal-title a,
+.terminal-title a:hover,
+.terminal-title a:visited,
+.terminal-title a:active {
+    color: #a0a0a0 !important;
+    text-decoration: none !important;
+    pointer-events: none;
+    cursor: default;
 }
 
 .terminal-exit-button {
     background: #000000;
-    border: 1px solid #00ff00;
-    color: #00ff00;
+    border: 1px solid #808080;
+    color: #a0a0a0;
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-family: "Courier New", "Lucida Console", monospace;
@@ -76,37 +96,39 @@ html.terminal-mode body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    position: absolute;
+    right: 2rem;
 }
 
 .terminal-exit-button:hover {
-    background: #00ff00;
-    color: #000000;
-    box-shadow: 0 0 10px #00ff00;
+    background: #404040;
+    color: #ffffff;
+    box-shadow: none;
 }
 
 .terminal-container {
     flex: 1;
     padding: 1rem;
-    background: #000000;
+    background: #0c0c0c;
 }
 
 /* XTerm.js Terminal Styling */
 .terminal-container .xterm {
     font-family: "Courier New", monospace !important;
-    background: #001100 !important;
+    background: #0c0c0c !important;
     height: 100% !important;
 }
 
 .terminal-container .xterm .xterm-viewport {
-    background: #001100 !important;
+    background: #0c0c0c !important;
 }
 
 .terminal-container .xterm .xterm-screen {
-    background: #001100 !important;
+    background: #0c0c0c !important;
 }
 
 .terminal-container .xterm .xterm-cursor-layer .xterm-cursor {
-    background: #00ff00 !important;
+    background: #808080 !important;
 }
 
 .terminal-container .xterm-screen {
@@ -128,278 +150,8 @@ html.terminal-mode body {
     font-weight: 500;
 }
 
-.terminal-mode #terminal-toggle {
-    color: #00ffff !important;
-}
+/* Terminal toggle button styling removed - not visible during terminal mode */
 
-.terminal-mode #terminal-toggle:hover {
-    color: #00ff00 !important;
-}
+/* Terminal mode CSS variables removed - no longer needed since terminal 
+   interface covers entire screen and uses its own styling */
 
-html.terminal-mode {
-    /* Core terminal colors - classic green phosphor CRT */
-    --bg: #001100 !important;
-    --fg: #00ff00 !important;
-    
-    /* Sidebar terminal styling */
-    --sidebar-bg: #000000 !important;
-    --sidebar-fg: #00ff00 !important;
-    --sidebar-non-existant: #004400 !important;
-    --sidebar-active: #00ffff !important;
-    --sidebar-spacer: #002200 !important;
-    
-    /* Menu and UI elements */
-    --icons: #00aa00 !important;
-    --icons-hover: #00ffff !important;
-    --links: #00ffff !important;
-    
-    /* Code and inline elements */
-    --inline-code-color: #ffff00 !important;
-    --mono-font: "Courier New", "Lucida Console", monospace !important;
-    
-    /* Theme popup */
-    --theme-popup-bg: #000000 !important;
-    --theme-popup-border: #00ff00 !important;
-    --theme-hover: #002200 !important;
-    
-    /* Content styling */
-    --quote-bg: #001100 !important;
-    --quote-border: #00ff00 !important;
-    
-    /* Tables */
-    --table-border-color: #00ff00 !important;
-    --table-header-bg: #002200 !important;
-    --table-alternate-bg: #000800 !important;
-    
-    /* Search */
-    --searchbar-border-color: #00ff00 !important;
-    --searchbar-bg: #000000 !important;
-    --searchbar-fg: #00ff00 !important;
-    --searchresults-li-bg: #001100 !important;
-    --search-mark-bg: #004400 !important;
-    
-    --color-scheme: dark !important;
-    --overlay-bg: rgba(0, 17, 0, 0.8) !important;
-}
-
-/* Terminal mode specific styling - high specificity to override general.css */
-html.terminal-mode body,
-html.terminal-mode * {
-    font-family: var(--mono-font) !important;
-}
-
-/* Override font family for all text elements */
-html.terminal-mode h1,
-html.terminal-mode h2, 
-html.terminal-mode h3,
-html.terminal-mode h4,
-html.terminal-mode h5,
-html.terminal-mode h6,
-html.terminal-mode p,
-html.terminal-mode div,
-html.terminal-mode span,
-html.terminal-mode a,
-html.terminal-mode li,
-html.terminal-mode td,
-html.terminal-mode th {
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content {
-    /* CRT screen effect */
-    background: 
-        linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%),
-        radial-gradient(ellipse at center, transparent 0%, rgba(0, 20, 0, 0.3) 100%) !important;
-    background-size: 100% 4px, 100% 100% !important;
-    
-    /* Subtle text glow for CRT effect */
-    text-shadow: 0 0 2px currentColor !important;
-}
-
-/* Terminal prompt styling for headers - override general.css */
-html.terminal-mode .content h1::before {
-    content: "root@amp:~# " !important;
-    color: #00ffff !important;
-    font-weight: normal !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content h2::before {
-    content: "$ " !important;
-    color: #00ffff !important;
-    font-weight: normal !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content h3::before {
-    content: "> " !important;
-    color: #00aa00 !important;
-    font-weight: normal !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Override header styling from general.css */
-html.terminal-mode .content h1 {
-    font-size: 2.8rem !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.025em !important;
-    margin-top: 0 !important;
-    margin-bottom: 2rem !important;
-    color: var(--fg) !important;
-    border-bottom: 2px solid var(--sidebar-active) !important;
-    padding-bottom: 1rem !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content h2 {
-    font-size: 2.2rem !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.02em !important;
-    margin-top: 3rem !important;
-    margin-bottom: 1.5rem !important;
-    color: var(--fg) !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content h3 {
-    font-size: 1.8rem !important;
-    font-weight: 600 !important;
-    margin-top: 2.5rem !important;
-    margin-bottom: 1rem !important;
-    color: var(--sidebar-active) !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Code blocks as terminal output */
-html.terminal-mode .content pre {
-    background: #000000 !important;
-    border: 1px solid #00ff00 !important;
-    border-radius: 0 !important;
-    position: relative !important;
-    box-shadow: none !important;
-}
-
-html.terminal-mode .content pre::before {
-    content: "Terminal Output:" !important;
-    display: block !important;
-    color: #00ffff !important;
-    font-size: 0.8em !important;
-    margin-bottom: 0.5em !important;
-    border-bottom: 1px solid #004400 !important;
-    padding-bottom: 0.2em !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Override inline code styling */
-html.terminal-mode .content code:not(.hljs) {
-    background-color: var(--quote-bg) !important;
-    padding: 0.2em 0.4em !important;
-    border-radius: 4px !important;
-    font-size: 0.9em !important;
-    color: var(--inline-code-color) !important;
-    font-weight: 600 !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Lists as command output */
-html.terminal-mode .content ul {
-    list-style: none !important;
-    padding-left: 0 !important;
-}
-
-html.terminal-mode .content li::before {
-    content: "• " !important;
-    color: #00ffff !important;
-}
-
-/* Override link styling from general.css */
-html.terminal-mode .content a {
-    text-decoration: underline !important;
-    color: #00ffff !important;
-    border-bottom: none !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content a::before {
-    content: "[" !important;
-    color: #00aa00 !important;
-}
-
-html.terminal-mode .content a::after {
-    content: "]" !important;
-    color: #00aa00 !important;
-}
-
-html.terminal-mode .content a:hover {
-    border-bottom: none !important;
-    text-decoration: underline !important;
-}
-
-/* Terminal window chrome */
-html.terminal-mode .page {
-    border: 2px solid #00ff00 !important;
-    border-radius: 0 !important;
-    box-shadow: 
-        0 0 20px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.1) !important;
-}
-
-/* Override table styling */
-html.terminal-mode .content table {
-    border-radius: 0 !important;
-    overflow: hidden !important;
-    box-shadow: none !important;
-    margin: 2rem 0 !important;
-    border: 1px solid var(--table-border-color) !important;
-}
-
-html.terminal-mode .content table th {
-    background-color: var(--table-header-bg) !important;
-    color: #00ff00 !important;
-    font-weight: 600 !important;
-    text-align: left !important;
-    padding: 1rem !important;
-    font-family: var(--mono-font) !important;
-}
-
-html.terminal-mode .content table td {
-    padding: 0.8rem 1rem !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Override blockquote styling */
-html.terminal-mode .content blockquote {
-    border-left: 4px solid var(--quote-border) !important;
-    background-color: var(--quote-bg) !important;
-    border-radius: 0 !important;
-    margin: 1.5rem 0 !important;
-    padding: 1rem 1.5rem !important;
-    font-style: normal !important;
-    font-family: var(--mono-font) !important;
-}
-
-/* Animate cursor effect for active elements */
-html.terminal-mode .sidebar-active::after {
-    content: "_" !important;
-    animation: blink 1s infinite !important;
-    color: #00ffff !important;
-}
-
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-}
-
-/* Terminal boot message */
-html.terminal-mode .content main::before {
-    content: "Amp Terminal v1.0 - Initializing documentation system...\A> Loading manual pages...\A> Ready.\A\A" !important;
-    white-space: pre-line !important;
-    display: block !important;
-    color: #00aa00 !important;
-    font-size: 0.9em !important;
-    margin-bottom: 1em !important;
-    padding: 1em !important;
-    border: 1px solid #004400 !important;
-    background: #000800 !important;
-    font-family: var(--mono-font) !important;
-}
