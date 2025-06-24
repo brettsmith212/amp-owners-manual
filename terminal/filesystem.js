@@ -30,6 +30,7 @@ class VirtualFilesystem {
             console.log('ContentLoader initialized');
         } else {
             console.warn('ContentLoader not available, file content loading disabled');
+            console.log('Available globals:', Object.keys(window).filter(k => k.includes('Content')));
         }
         
         this.createDocumentationStructure();
@@ -352,6 +353,20 @@ class VirtualFilesystem {
      */
     setCurrentDirectory(path) {
         this.currentPath = path;
+    }
+
+    /**
+     * Get a file node by path (relative to current directory)
+     */
+    getFileNode(filename) {
+        const targetPath = this.resolvePath(filename);
+        const node = this.getPathInfo(targetPath);
+        
+        if (!node) {
+            return { success: false, message: 'No such file or directory' };
+        }
+        
+        return { success: true, node: node };
     }
 }
 

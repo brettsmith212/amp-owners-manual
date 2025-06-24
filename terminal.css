@@ -110,17 +110,26 @@ html.terminal-mode body {
     flex: 1;
     padding: 1rem;
     background: #0c0c0c;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* XTerm.js Terminal Styling */
 .terminal-container .xterm {
     font-family: "Courier New", monospace !important;
     background: #0c0c0c !important;
+    flex: 1;
+    min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.terminal-container .xterm .xterm-screen {
     height: 100% !important;
 }
 
 .terminal-container .xterm .xterm-viewport {
     background: #0c0c0c !important;
+    overflow-y: auto !important;
 }
 
 .terminal-container .xterm .xterm-screen {

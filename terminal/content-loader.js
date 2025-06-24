@@ -40,15 +40,12 @@ class ContentLoader {
         this.loading.add(sourcePath);
 
         try {
-            // In a real terminal environment, we would fetch from the file system
-            // For the browser-based terminal, we'll fetch from the mdbook serve endpoint
-            const response = await fetch(`/${sourcePath}?raw=true`).catch(() => {
-                // Fallback: try to get the rendered HTML and extract content
-                return fetch(`/${sourcePath.replace('src/', '').replace('.md', '.html')}`);
-            });
+            // mdbook only serves rendered HTML, so we fetch the HTML page and extract content
+            const htmlPath = sourcePath.replace('src/', '').replace('.md', '.html');
+            const response = await fetch(`/${htmlPath}`);
 
             if (!response.ok) {
-                throw new Error(`Failed to load ${sourcePath}: ${response.status}`);
+                throw new Error(`Failed to load ${htmlPath}: ${response.status}`);
             }
 
             const content = await response.text();
@@ -77,9 +74,37 @@ class ContentLoader {
      * @returns {string} Processed content
      */
     processContent(content, sourcePath) {
-        // For now, return content as-is
-        // In future steps, we'll add markdown-to-terminal formatting
-        return content;
+        // Basic markdown-to-terminal formatting
+        let processed = content;
+        
+        // Extract content from mdbook HTML
+        if (content.includes('<html>') || content.includes('<!DOCTYPE')) {
+            // Extract content from HTML (mdbook structure)
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
+            // mdbook uses #content as the main content area
+            const mainContent = doc.querySelector('#content') || doc.querySelector('main') || doc.querySelector('.content') || doc.body;
+            processed = mainContent ? mainContent.textContent || mainContent.innerText : content;
+        }
+        
+        // Basic markdown cleanup for terminal display
+        processed = processed
+            // Remove markdown headers formatting but keep content
+            .replace(/^#{1,6}\s+(.+)$/gm, '$1')
+            // Remove markdown emphasis but keep content
+            .replace(/\*\*(.+?)\*\*/g, '$1')
+            .replace(/\*(.+?)\*/g, '$1')
+            .replace(/_(.+?)_/g, '$1')
+            // Remove markdown links but keep text
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            // Remove code block markers but keep content
+            .replace(/```[\s\S]*?\n([\s\S]*?)\n```/g, '$1')
+            .replace(/`([^`]+)`/g, '$1')
+            // Clean up extra whitespace
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+            
+        return processed;
     }
 
     /**

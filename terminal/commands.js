@@ -135,36 +135,144 @@ class CommandProcessor {
      * Display file content
      */
     async displayFile(args) {
-        // Will be implemented in Step 8
-        console.log('cat command placeholder:', args);
-        return { success: true, output: 'File content placeholder' };
+        if (args.length === 0) {
+            return { success: false, output: 'cat: missing file operand' };
+        }
+        
+        const filename = args[0];
+        const fileNode = this.filesystem.getFileNode(filename);
+        
+        if (!fileNode.success) {
+            return { success: false, output: `cat: ${filename}: ${fileNode.message}` };
+        }
+        
+        if (fileNode.node.type === 'directory') {
+            return { success: false, output: `cat: ${filename}: Is a directory` };
+        }
+        
+        // Load content using ContentLoader
+        if (!fileNode.node.sourcePath) {
+            return { success: false, output: `cat: ${filename}: No source path available` };
+        }
+        
+        if (!this.filesystem.contentLoader) {
+            return { success: false, output: `cat: ${filename}: Content loader not initialized` };
+        }
+        
+        try {
+            const content = await this.filesystem.contentLoader.loadContent(fileNode.node.sourcePath);
+            return { success: true, output: content };
+        } catch (error) {
+            return { success: false, output: `cat: ${filename}: ${error.message}` };
+        }
     }
 
     /**
      * Display file content with paging
      */
     async displayFilePaged(args) {
-        // Will be implemented in Step 8
-        console.log('less command placeholder:', args);
-        return { success: true, output: 'Paged file content placeholder' };
+        if (args.length === 0) {
+            return { success: false, output: 'less: missing file operand' };
+        }
+        
+        const filename = args[0];
+        const fileNode = this.filesystem.getFileNode(filename);
+        
+        if (!fileNode.success) {
+            return { success: false, output: `less: ${filename}: ${fileNode.message}` };
+        }
+        
+        if (fileNode.node.type === 'directory') {
+            return { success: false, output: `less: ${filename}: Is a directory` };
+        }
+        
+        try {
+            const content = await this.filesystem.contentLoader.loadContent(fileNode.node.sourcePath);
+            // For now, just display like cat. In future steps, we can add pagination
+            return { success: true, output: content + '\n(END)' };
+        } catch (error) {
+            return { success: false, output: `less: ${filename}: ${error.message}` };
+        }
     }
 
     /**
      * Display first lines of file
      */
     async displayFileHead(args) {
-        // Will be implemented in Step 8
-        console.log('head command placeholder:', args);
-        return { success: true, output: 'File head placeholder' };
+        if (args.length === 0) {
+            return { success: false, output: 'head: missing file operand' };
+        }
+        
+        // Parse options (-n number)
+        let lines = 10; // default
+        let filename = args[0];
+        
+        if (args[0] === '-n' && args.length >= 3) {
+            lines = parseInt(args[1]);
+            filename = args[2];
+            if (isNaN(lines) || lines < 0) {
+                return { success: false, output: 'head: invalid number of lines' };
+            }
+        }
+        
+        const fileNode = this.filesystem.getFileNode(filename);
+        
+        if (!fileNode.success) {
+            return { success: false, output: `head: ${filename}: ${fileNode.message}` };
+        }
+        
+        if (fileNode.node.type === 'directory') {
+            return { success: false, output: `head: ${filename}: Is a directory` };
+        }
+        
+        try {
+            const content = await this.filesystem.contentLoader.loadContent(fileNode.node.sourcePath);
+            const contentLines = content.split('\n');
+            const displayLines = contentLines.slice(0, lines);
+            return { success: true, output: displayLines.join('\n') };
+        } catch (error) {
+            return { success: false, output: `head: ${filename}: ${error.message}` };
+        }
     }
 
     /**
      * Display last lines of file
      */
     async displayFileTail(args) {
-        // Will be implemented in Step 8
-        console.log('tail command placeholder:', args);
-        return { success: true, output: 'File tail placeholder' };
+        if (args.length === 0) {
+            return { success: false, output: 'tail: missing file operand' };
+        }
+        
+        // Parse options (-n number)
+        let lines = 10; // default
+        let filename = args[0];
+        
+        if (args[0] === '-n' && args.length >= 3) {
+            lines = parseInt(args[1]);
+            filename = args[2];
+            if (isNaN(lines) || lines < 0) {
+                return { success: false, output: 'tail: invalid number of lines' };
+            }
+        }
+        
+        const fileNode = this.filesystem.getFileNode(filename);
+        
+        if (!fileNode.success) {
+            return { success: false, output: `tail: ${filename}: ${fileNode.message}` };
+        }
+        
+        if (fileNode.node.type === 'directory') {
+            return { success: false, output: `tail: ${filename}: Is a directory` };
+        }
+        
+        try {
+            const content = await this.filesystem.contentLoader.loadContent(fileNode.node.sourcePath);
+            const contentLines = content.split('\n');
+            const displayLines = contentLines.slice(-lines);
+            return { success: true, output: displayLines.join('\n') };
+        } catch (error) {
+            return { success: false, output: `tail: ${filename}: ${error.message}` };
+        }
     }
 
     /**
