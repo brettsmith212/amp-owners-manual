@@ -80,7 +80,7 @@ This plan outlines the development process for creating a functional terminal em
   - **Step Dependencies**: Step 6
   - **User Instructions**: Test navigation commands: `ls`, `cd getting-started`, `pwd`
 
-- [ ] Step 8: Implement File Content Display Commands
+- [x] Step 8: Implement File Content Display Commands
   - **Task**: Create `cat`, `less`, `head`, `tail` commands for viewing documentation content
   - **Description**: Allow users to read documentation content directly in the terminal. The `cat` command will display full content, while others provide different viewing options.
   - **Files**:

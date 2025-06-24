@@ -40,19 +40,27 @@ class ContentLoader {
         this.loading.add(sourcePath);
 
         try {
-            // mdbook only serves rendered HTML, so we fetch the HTML page and extract content
-            const htmlPath = sourcePath.replace('src/', '').replace('.md', '.html');
-            const response = await fetch(`/${htmlPath}`);
-
-            if (!response.ok) {
-                throw new Error(`Failed to load ${htmlPath}: ${response.status}`);
+            // Try to fetch from GitHub raw files first
+            const githubRawUrl = `https://raw.githubusercontent.com/brettsmith212/amp-owners-manual/main/${sourcePath}`;
+            let response = await fetch(githubRawUrl);
+            let isRawMarkdown = false;
+            
+            if (response.ok) {
+                isRawMarkdown = true;
+            } else {
+                // Fallback: fetch rendered HTML and extract content
+                const htmlPath = sourcePath.replace('src/', '').replace('.md', '.html');
+                response = await fetch(`/${htmlPath}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${htmlPath}: ${response.status}`);
+                }
             }
 
             const content = await response.text();
             
-            // If we got HTML, we need to extract the markdown-like content
-            // For now, we'll store the raw content and handle formatting in display
-            const processedContent = this.processContent(content, sourcePath);
+            // Process content based on type
+            const processedContent = this.processContent(content, sourcePath, isRawMarkdown);
             
             this.cache.set(sourcePath, processedContent);
             return processedContent;
@@ -71,38 +79,35 @@ class ContentLoader {
      * Process and format content for terminal display
      * @param {string} content - Raw content from file
      * @param {string} sourcePath - Source path for context
+     * @param {boolean} isRawMarkdown - Whether content is raw markdown or HTML
      * @returns {string} Processed content
      */
-    processContent(content, sourcePath) {
-        // Basic markdown-to-terminal formatting
+    processContent(content, sourcePath, isRawMarkdown = false) {
         let processed = content;
         
-        // Extract content from mdbook HTML
-        if (content.includes('<html>') || content.includes('<!DOCTYPE')) {
-            // Extract content from HTML (mdbook structure)
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(content, 'text/html');
-            // mdbook uses #content as the main content area
-            const mainContent = doc.querySelector('#content') || doc.querySelector('main') || doc.querySelector('.content') || doc.body;
-            processed = mainContent ? mainContent.textContent || mainContent.innerText : content;
+        if (isRawMarkdown) {
+            // Raw markdown - keep as-is, just clean up excessive whitespace
+            processed = content
+                .replace(/\r\n/g, '\n') // Normalize line endings
+                .replace(/\n{4,}/g, '\n\n\n'); // Limit to max 3 consecutive newlines
+        } else {
+            // Extract content from mdbook HTML
+            if (content.includes('<html>') || content.includes('<!DOCTYPE')) {
+                // Extract content from HTML (mdbook structure)
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(content, 'text/html');
+                // mdbook uses #content as the main content area
+                const mainContent = doc.querySelector('#content') || doc.querySelector('main') || doc.querySelector('.content') || doc.body;
+                processed = mainContent ? mainContent.textContent || mainContent.innerText : content;
+                
+                // Since we extracted from HTML, we lost original markdown formatting
+                // Keep the text as-is without aggressive cleanup
+                processed = processed
+                    .replace(/\r\n/g, '\n') // Normalize line endings
+                    .replace(/\n{4,}/g, '\n\n\n') // Limit excessive newlines
+                    .trim();
+            }
         }
-        
-        // Basic markdown cleanup for terminal display
-        processed = processed
-            // Remove markdown headers formatting but keep content
-            .replace(/^#{1,6}\s+(.+)$/gm, '$1')
-            // Remove markdown emphasis but keep content
-            .replace(/\*\*(.+?)\*\*/g, '$1')
-            .replace(/\*(.+?)\*/g, '$1')
-            .replace(/_(.+?)_/g, '$1')
-            // Remove markdown links but keep text
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            // Remove code block markers but keep content
-            .replace(/```[\s\S]*?\n([\s\S]*?)\n```/g, '$1')
-            .replace(/`([^`]+)`/g, '$1')
-            // Clean up extra whitespace
-            .replace(/\n{3,}/g, '\n\n')
-            .trim();
             
         return processed;
     }
