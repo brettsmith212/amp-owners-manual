@@ -51,7 +51,7 @@ class TerminalController {
                 },
                 fontFamily: '"Courier New", monospace',
                 fontSize: 14,
-                lineHeight: 1.2,
+                lineHeight: 1.4,
                 cursorBlink: true,
                 cursorStyle: 'block',
                 bellStyle: 'none',
@@ -197,10 +197,17 @@ class TerminalController {
      * Process the current command
      */
     async processCommand() {
-        this.terminal.writeln(''); // New line
-        
         const command = this.currentInput.trim();
         this.currentInput = '';
+        
+        // Handle clear command specially - clear immediately without showing command
+        if (command === 'clear') {
+            this.clear();
+            this.showPrompt();
+            return;
+        }
+        
+        this.terminal.writeln(''); // New line
         
         if (command) {
             // Add to history
@@ -220,11 +227,7 @@ class TerminalController {
      */
     async executeCommand(command) {
         // Handle built-in terminal commands first
-        if (command === 'clear') {
-            this.clear();
-            this.showPrompt();
-            return;
-        } else if (command === 'exit') {
+        if (command === 'exit') {
             // Exit terminal mode
             const event = new CustomEvent('exitTerminal');
             document.dispatchEvent(event);
@@ -236,7 +239,11 @@ class TerminalController {
             try {
                 const result = await this.commandProcessor.processCommand(command);
                 if (result.output) {
-                    this.terminal.writeln(result.output);
+                    // Handle multi-line output properly
+                    const lines = result.output.split('\n');
+                    lines.forEach(line => {
+                        this.terminal.writeln(line);
+                    });
                 }
                 if (!result.success && result.output) {
                     // Error message already included in output
@@ -264,8 +271,9 @@ class TerminalController {
      * Display command prompt
      */
     showPrompt() {
-        if (this.terminal && this.isInitialized) {
-            this.terminal.write('$ ');
+        if (this.terminal && this.isInitialized && this.filesystem) {
+            const currentPath = this.filesystem.getCurrentDirectory();
+            this.terminal.write(`root@amp:${currentPath} $ `);
         }
     }
 
@@ -274,7 +282,7 @@ class TerminalController {
      */
     clear() {
         if (this.terminal) {
-            this.terminal.clear();
+            this.terminal.reset();
         }
     }
 
