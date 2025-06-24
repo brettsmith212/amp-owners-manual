@@ -13,6 +13,7 @@ class TerminalController {
         this.isInitialized = false;
         this.filesystem = null;
         this.commandProcessor = null;
+        this.completionSystem = null;
         this.commandHistory = [];
         this.historyIndex = -1;
         this.currentInput = '';
@@ -118,6 +119,13 @@ class TerminalController {
         // Initialize command processor
         this.commandProcessor = new CommandProcessor(this.filesystem, this);
         
+        // Initialize completion system
+        if (typeof CompletionSystem !== 'undefined') {
+            this.completionSystem = new CompletionSystem(this.filesystem, this.commandProcessor);
+        } else {
+            console.warn('CompletionSystem not available');
+        }
+        
         console.log('Filesystem and command processor initialized');
     }
 
@@ -146,6 +154,8 @@ class TerminalController {
                 this.terminal.writeln(`Error: ${error.message}`);
                 this.showPrompt();
             });
+        } else if (code === 9) { // Tab key
+            this.handleTabCompletion();
         } else if (code === 127) { // Backspace
             this.handleBackspace();
         } else if (code === 3) { // Ctrl+C
@@ -186,11 +196,94 @@ class TerminalController {
     }
 
     /**
+     * Handle tab completion
+     */
+    handleTabCompletion() {
+        if (!this.completionSystem) return;
+        
+        try {
+            const completions = this.completionSystem.getCompletions(this.currentInput);
+            const result = this.completionSystem.completeInput(this.currentInput, completions);
+            
+            if (result.hasMore && result.matches) {
+                // Multiple matches - show them
+                this.terminal.writeln(''); // Move to new line
+                this.terminal.writeln(result.matches.join('  ')); // Show matches simply
+                
+                // Redraw prompt with completed input
+                this.showPrompt();
+                this.terminal.write(result.completed);
+                this.currentInput = result.completed;
+            } else {
+                // Single match or common prefix - complete it
+                const oldLength = this.currentInput.length;
+                this.currentInput = result.completed;
+                
+                // Clear old input and write new
+                for (let i = 0; i < oldLength; i++) {
+                    this.terminal.write('\b \b');
+                }
+                this.terminal.write(this.currentInput);
+            }
+        } catch (error) {
+            console.error('Tab completion error:', error);
+        }
+    }
+
+    /**
      * Handle escape sequences (arrow keys, etc.)
      */
     handleEscapeSequence(data) {
-        // For now, ignore escape sequences
-        // Command history navigation will be implemented in Step 10
+        if (data.length >= 3) {
+            const sequence = data.substring(1);
+            
+            if (sequence === '[A') { // Up arrow
+                this.navigateHistory('up');
+            } else if (sequence === '[B') { // Down arrow
+                this.navigateHistory('down');
+            }
+            // Ignore other escape sequences for now
+        }
+    }
+
+    /**
+     * Navigate command history
+     */
+    navigateHistory(direction) {
+        if (this.commandHistory.length === 0) return;
+        
+        if (direction === 'up') {
+            if (this.historyIndex > 0) {
+                this.historyIndex--;
+            } else if (this.historyIndex === -1) {
+                this.historyIndex = this.commandHistory.length - 1;
+            }
+        } else if (direction === 'down') {
+            if (this.historyIndex < this.commandHistory.length - 1) {
+                this.historyIndex++;
+            } else {
+                this.historyIndex = -1;
+                this.replaceCurrentInput('');
+                return;
+            }
+        }
+        
+        const historyCommand = this.commandHistory[this.historyIndex];
+        this.replaceCurrentInput(historyCommand);
+    }
+
+    /**
+     * Replace current input with new text
+     */
+    replaceCurrentInput(newInput) {
+        // Clear current input
+        for (let i = 0; i < this.currentInput.length; i++) {
+            this.terminal.write('\b \b');
+        }
+        
+        // Write new input
+        this.currentInput = newInput;
+        this.terminal.write(newInput);
     }
 
     /**
