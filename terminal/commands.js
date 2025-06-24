@@ -10,7 +10,33 @@ class CommandProcessor {
         this.filesystem = filesystem;
         this.terminal = terminal;
         this.commands = new Map();
+        this.helpSystem = null;
+        this.searchSystem = null;
         this.registerCommands();
+        this.initializeHelp();
+        this.initializeSearch();
+    }
+
+    /**
+     * Initialize help system
+     */
+    initializeHelp() {
+        if (typeof HelpSystem !== 'undefined') {
+            this.helpSystem = new HelpSystem();
+        } else {
+            console.warn('HelpSystem not available');
+        }
+    }
+
+    /**
+     * Initialize search system
+     */
+    initializeSearch() {
+        if (typeof SearchSystem !== 'undefined') {
+            this.searchSystem = new SearchSystem(this.filesystem);
+        } else {
+            console.warn('SearchSystem not available');
+        }
     }
 
     /**
@@ -279,24 +305,25 @@ class CommandProcessor {
      * Show help information
      */
     async showHelp(args) {
-        // Will be implemented in Step 9
-        const helpText = `
-Available commands:
-  ls [path]     - List directory contents
-  cd <path>     - Change directory
-  pwd           - Print working directory
-  cat <file>    - Display file content
-  less <file>   - Display file content with paging
-  head <file>   - Display first lines of file
-  tail <file>   - Display last lines of file
-  tree          - Show directory tree
-  find <term>   - Search for content
-  man <topic>   - Show manual page
-  grep <term>   - Search in files
-  help          - Show this help
-  clear         - Clear screen
-        `;
-        return { success: true, output: helpText.trim() };
+        if (!this.helpSystem) {
+            return { success: false, output: 'Help system not available' };
+        }
+
+        if (args.length === 0) {
+            // Show general help
+            const helpText = this.helpSystem.getGeneralHelp();
+            return { success: true, output: helpText };
+        } else {
+            // Show help for specific command
+            const commandName = args[0];
+            const commandHelp = this.helpSystem.getCommandHelp(commandName);
+            
+            if (commandHelp) {
+                return { success: true, output: commandHelp };
+            } else {
+                return { success: false, output: `No help available for command: ${commandName}` };
+            }
+        }
     }
 
     /**
@@ -311,18 +338,89 @@ Available commands:
      * Show directory tree
      */
     async showTree(args) {
-        // Will be implemented in Step 9
-        console.log('tree command placeholder:', args);
-        return { success: true, output: 'Directory tree placeholder' };
+        const startPath = args.length > 0 ? args[0] : this.filesystem.getCurrentDirectory();
+        
+        try {
+            const treeOutput = this.generateTree(startPath);
+            return { success: true, output: treeOutput };
+        } catch (error) {
+            return { success: false, output: `tree: ${error.message}` };
+        }
+    }
+
+    /**
+     * Generate tree structure display
+     */
+    generateTree(startPath, prefix = '', isLast = true) {
+        const resolvedPath = this.filesystem.resolvePath(startPath);
+        const pathInfo = this.filesystem.getPathInfo(resolvedPath);
+        
+        if (!pathInfo) {
+            throw new Error(`${startPath}: No such file or directory`);
+        }
+        
+        let result = '';
+        const currentName = pathInfo.name || resolvedPath.split('/').pop() || '/';
+        
+        if (pathInfo.type === 'directory') {
+            result += `${currentName}/\n`;
+            
+            if (pathInfo.children) {
+                const childEntries = Object.entries(pathInfo.children);
+                const sortedChildren = childEntries.sort(([,a], [,b]) => {
+                    // Directories first, then files, both alphabetically
+                    if (a.type !== b.type) {
+                        return a.type === 'directory' ? -1 : 1;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+                
+                sortedChildren.forEach(([name, child], index) => {
+                    const isLastChild = index === sortedChildren.length - 1;
+                    const childPrefix = prefix + (isLast ? '    ' : '│   ');
+                    const connector = isLastChild ? '└── ' : '├── ';
+                    
+                    result += prefix + connector;
+                    
+                    if (child.type === 'directory') {
+                        result += this.generateTree(child.path, childPrefix, isLastChild);
+                    } else {
+                        result += `${child.name}\n`;
+                    }
+                });
+            }
+        } else {
+            result += `${currentName}\n`;
+        }
+        
+        return result;
     }
 
     /**
      * Find content
      */
     async findContent(args) {
-        // Will be implemented in Step 9
-        console.log('find command placeholder:', args);
-        return { success: true, output: 'Search results placeholder' };
+        if (args.length === 0) {
+            return { success: false, output: 'find: missing search term' };
+        }
+
+        if (!this.searchSystem) {
+            return { success: false, output: 'find: search system not available' };
+        }
+
+        const searchTerm = args.join(' '); // Join all args to support multi-word searches
+        
+        try {
+            const results = await this.searchSystem.searchContent(searchTerm, {
+                maxResults: 10,
+                caseSensitive: false
+            });
+            
+            const formattedResults = this.searchSystem.formatSearchResults(results, searchTerm);
+            return { success: true, output: formattedResults };
+        } catch (error) {
+            return { success: false, output: `find: ${error.message}` };
+        }
     }
 
     /**
