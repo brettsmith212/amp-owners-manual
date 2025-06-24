@@ -56,6 +56,25 @@ mdbook build
 
 **Why this matters:** We spent significant time debugging why custom CSS wasn't loading, only to discover mdbook has strict rules about which CSS files it serves from the theme directory.
 
+## Adding Custom JavaScript Files - CRITICAL KNOWLEDGE
+
+**❌ WRONG WAY (doesn't work):**
+
+- Adding JS files to `theme/terminal/` directory expecting them to be served
+- mdbook only serves predefined files from theme directory
+
+**✅ CORRECT WAY:**
+
+1. Place custom JS files in the root directory (not in theme subdirs)
+2. Add to `book.toml`:
+   ```toml
+   [output.html]
+   additional-js = ["file1.js", "subdir/file2.js"]
+   ```
+3. mdbook will automatically include these via the `{{#each additional_js}}` block in index.hbs
+
+**Key Discovery:** mdbook's additional-js works exactly like additional-css - files must be in root directory or subdirectories of root, NOT in theme/ directory. This was critical for serving our terminal modules.
+
 ## Terminal Mode Feature
 
 ### Implementation Details
@@ -80,6 +99,22 @@ mdbook build
 - CRT effects with scan lines and text glow
 - Monospace fonts enforced throughout
 - Retro green-on-black color scheme
+
+### XTerm.js Terminal Integration
+
+**Implementation Status (Steps 1-4 Complete):**
+
+- ✅ **Dependencies**: XTerm.js loaded via CDN in index.hbs
+- ✅ **Module Structure**: Terminal modules in `/terminal/` directory served via additional-js
+- ✅ **Layout Switching**: Full-screen terminal interface with proper CSS overlay
+- ✅ **Terminal Instance**: XTerm.js initialized with retro green theme and proper configuration
+- ❌ **Input Handling**: Step 5 - not yet implemented
+
+**Critical Files:**
+- `book.toml`: Contains additional-js configuration for terminal modules
+- `terminal/terminal.js`: TerminalController class with XTerm.js initialization
+- `terminal.css`: Full styling including XTerm.js theme overrides
+- `theme/book.js`: Terminal mode switching and lifecycle management
 
 ### Terminal Mode Features
 

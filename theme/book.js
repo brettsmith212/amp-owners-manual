@@ -641,6 +641,11 @@ aria-label="Show hidden lines"></button>';
             setTerminalMode(false);
         }
     });
+    
+    // Handle exit command from terminal
+    document.addEventListener('exitTerminal', function() {
+        setTerminalMode(false);
+    });
 })();
 
 (function sidebar() {

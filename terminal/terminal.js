@@ -81,6 +81,9 @@ class TerminalController {
             this.terminal.writeln('\x1b[33mType "help" for available commands.\x1b[0m');
             this.terminal.writeln('');
 
+            // Set up input handling
+            this.setupInputHandling();
+
             // Show initial prompt
             this.showPrompt();
 
@@ -93,19 +96,127 @@ class TerminalController {
     }
 
     /**
+     * Set up terminal input handling
+     */
+    setupInputHandling() {
+        if (!this.terminal) return;
+        
+        // Handle keyboard input
+        this.terminal.onData(data => {
+            this.handleInput(data);
+        });
+    }
+
+    /**
      * Handle user input from terminal
      */
     handleInput(data) {
-        // Will be implemented in Step 5
-        console.log('Input handling placeholder:', data);
+        const code = data.charCodeAt(0);
+        
+        // Handle special keys
+        if (code === 13) { // Enter key
+            this.processCommand();
+        } else if (code === 127) { // Backspace
+            this.handleBackspace();
+        } else if (code === 3) { // Ctrl+C
+            this.handleInterrupt();
+        } else if (code === 27) { // Escape sequences (arrow keys, etc.)
+            this.handleEscapeSequence(data);
+        } else if (code >= 32 && code <= 126) { // Printable characters
+            this.addToInput(data);
+        }
+        // Ignore other control characters
+    }
+
+    /**
+     * Add character to current input line
+     */
+    addToInput(char) {
+        this.currentInput += char;
+        this.terminal.write(char);
+    }
+
+    /**
+     * Handle backspace key
+     */
+    handleBackspace() {
+        if (this.currentInput.length > 0) {
+            this.currentInput = this.currentInput.slice(0, -1);
+            this.terminal.write('\b \b'); // Move back, space, move back
+        }
+    }
+
+    /**
+     * Handle Ctrl+C interrupt
+     */
+    handleInterrupt() {
+        this.terminal.writeln('^C');
+        this.currentInput = '';
+        this.showPrompt();
+    }
+
+    /**
+     * Handle escape sequences (arrow keys, etc.)
+     */
+    handleEscapeSequence(data) {
+        // For now, ignore escape sequences
+        // Command history navigation will be implemented in Step 10
+    }
+
+    /**
+     * Process the current command
+     */
+    processCommand() {
+        this.terminal.writeln(''); // New line
+        
+        const command = this.currentInput.trim();
+        this.currentInput = '';
+        
+        if (command) {
+            // Add to history
+            this.commandHistory.push(command);
+            this.historyIndex = this.commandHistory.length;
+            
+            // Execute command (placeholder for now)
+            this.executeCommand(command);
+        } else {
+            // Empty command, just show prompt
+            this.showPrompt();
+        }
+    }
+
+    /**
+     * Execute a command
+     */
+    executeCommand(command) {
+        if (command === 'help') {
+            this.terminal.writeln('\x1b[32mAvailable commands:\x1b[0m');
+            this.terminal.writeln('  help    - Show this help message');
+            this.terminal.writeln('  clear   - Clear the terminal screen');
+            this.terminal.writeln('  exit    - Exit terminal mode');
+            this.terminal.writeln('');
+        } else if (command === 'clear') {
+            this.clear();
+        } else if (command === 'exit') {
+            // Exit terminal mode
+            const event = new CustomEvent('exitTerminal');
+            document.dispatchEvent(event);
+            return;
+        } else {
+            this.terminal.writeln(`\x1b[31mCommand not found: ${command}\x1b[0m`);
+            this.terminal.writeln('Type "help" for available commands.');
+        }
+        
+        this.showPrompt();
     }
 
     /**
      * Write output to terminal
      */
     writeOutput(data) {
-        // Will be implemented in Step 5
-        console.log('Output writing placeholder:', data);
+        if (this.terminal && this.isInitialized) {
+            this.terminal.write(data);
+        }
     }
 
     /**
