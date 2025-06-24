@@ -228,7 +228,7 @@ class PagerSystem {
     }
 
     /**
-     * Display simple status without escape sequences
+     * Display simple status with white background
      */
     displaySimpleStatus() {
         const totalLines = this.lines.length;
@@ -246,12 +246,14 @@ class PagerSystem {
             status = `--- ${this.statusLine} (${percentage}%) ---`;
         }
         
-        if (this.currentLine === 0 && totalLines > maxContentLines) {
+        if (totalLines > maxContentLines) {
             status += ' j/k ↑/↓ to scroll, q to quit';
         }
         
-        // Simple writeln without escape sequences
-        this.terminal.terminal.writeln(status);
+        // Write status with white background (reverse video)
+        const termWidth = this.terminal.terminal.cols || 80;
+        const paddedStatus = status.padEnd(termWidth).substring(0, termWidth);
+        this.terminal.terminal.write(`\x1b[7m${paddedStatus}\x1b[0m\r\n`);
     }
 
     /**
