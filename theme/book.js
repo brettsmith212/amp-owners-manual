@@ -521,6 +521,42 @@ aria-label="Show hidden lines"></button>';
     const terminalInterface = document.getElementById('terminal-interface');
     const exitTerminalButton = document.getElementById('exit-terminal');
     
+    // Global terminal controller instance
+    let terminalController = null;
+    
+    // Initialize terminal emulator
+    function initializeTerminal() {
+        // Skip if terminal is already initialized
+        if (terminalController && terminalController.isInitialized) {
+            return;
+        }
+        
+        // Check if required classes are available
+        if (typeof Terminal === 'undefined' || typeof TerminalController === 'undefined') {
+            console.error('Terminal dependencies not loaded');
+            return;
+        }
+        
+        // Get terminal container
+        const terminalContainer = document.getElementById('terminal-container');
+        if (!terminalContainer) {
+            console.error('Terminal container not found');
+            return;
+        }
+        
+        // Create and initialize terminal controller
+        terminalController = new TerminalController();
+        terminalController.initialize(terminalContainer).then(success => {
+            if (success) {
+                console.log('Terminal initialized successfully');
+            } else {
+                console.error('Terminal initialization failed');
+            }
+        }).catch(error => {
+            console.error('Terminal initialization error:', error);
+        });
+    }
+    
     // Check if terminal mode is enabled
     function isTerminalMode() {
         try {
@@ -554,8 +590,8 @@ aria-label="Show hidden lines"></button>';
                 terminalInterface.classList.remove('hidden');
             }
             
-            // Initialize terminal emulator in next step
-            console.log('Terminal mode activated - ready for xterm.js initialization');
+            // Initialize terminal emulator
+            initializeTerminal();
         } else {
             // Exit terminal mode
             html.classList.remove('terminal-mode');
@@ -570,6 +606,12 @@ aria-label="Show hidden lines"></button>';
             // Hide terminal interface
             if (terminalInterface) {
                 terminalInterface.classList.add('hidden');
+            }
+            
+            // Cleanup terminal instance
+            if (terminalController) {
+                terminalController.destroy();
+                terminalController = null;
             }
             
             console.log('Terminal mode deactivated');

@@ -5,9 +5,10 @@ This plan outlines the development process for creating a functional terminal em
 ## Project Setup and Dependencies
 
 - [x] Step 1: Add XTerm.js Dependencies and Package Configuration
+
   - **Task**: Install xterm.js and required addons, update package.json and build configuration
   - **Description**: Establish the foundation by adding the xterm.js terminal emulator library and its essential addons. This step sets up the core dependency needed for the entire terminal interface.
-  - **Files**: 
+  - **Files**:
     - `package.json`: Add xterm.js dependencies (@xterm/xterm, @xterm/addon-fit, @xterm/addon-web-links)
     - `book.toml`: Update configuration if needed for new assets
   - **Step Dependencies**: None
@@ -27,6 +28,7 @@ This plan outlines the development process for creating a functional terminal em
 ## Basic Terminal Interface
 
 - [x] Step 3: Implement Terminal Container and Layout Switching
+
   - **Task**: Create HTML structure for terminal mode and implement switching between documentation and terminal views
   - **Description**: Build the UI foundation that allows users to toggle between the normal documentation interface and the terminal interface. This includes hiding/showing appropriate elements.
   - **Files**:
@@ -36,7 +38,8 @@ This plan outlines the development process for creating a functional terminal em
   - **Step Dependencies**: Step 2
   - **User Instructions**: ✅ Test that clicking "Terminal Mode" shows/hides appropriate interface elements
 
-- [ ] Step 4: Initialize XTerm.js Terminal Instance
+- [x] Step 4: Initialize XTerm.js Terminal Instance
+
   - **Task**: Create and configure the xterm.js terminal with proper styling and addons
   - **Description**: Set up the actual terminal emulator with appropriate theming, size handling, and addon loading. This creates the interactive terminal that users will type into.
   - **Files**:
@@ -57,6 +60,7 @@ This plan outlines the development process for creating a functional terminal em
 ## Virtual Filesystem Implementation
 
 - [ ] Step 6: Create Documentation Content Mapping
+
   - **Task**: Build a virtual filesystem structure that maps to the mdbook documentation hierarchy
   - **Description**: Create a JSON or JavaScript object structure that represents the documentation as a filesystem, allowing navigation through docs using familiar Unix commands.
   - **Files**:
@@ -67,6 +71,7 @@ This plan outlines the development process for creating a functional terminal em
   - **User Instructions**: Verify filesystem structure matches documentation organization
 
 - [ ] Step 7: Implement Directory Navigation Commands
+
   - **Task**: Create `ls`, `cd`, `pwd` commands for navigating the virtual filesystem
   - **Description**: Build the core navigation commands that allow users to explore the documentation structure as if it were a real filesystem. Essential for the terminal UX.
   - **Files**:
@@ -88,6 +93,7 @@ This plan outlines the development process for creating a functional terminal em
 ## Command Processor Enhancement
 
 - [ ] Step 9: Create Advanced Commands and Help System
+
   - **Task**: Implement `help`, `man`, `tree`, `find` commands and command completion
   - **Description**: Build utility commands that enhance the terminal experience. The help system guides users, tree shows structure, and find enables content search.
   - **Files**:
@@ -109,6 +115,7 @@ This plan outlines the development process for creating a functional terminal em
 ## Documentation Integration
 
 - [ ] Step 11: Create Man Page System for Amp Documentation
+
   - **Task**: Implement `man amp`, `man commands` to show formatted documentation as man pages
   - **Description**: Create a traditional Unix man page experience for Amp documentation. This provides a familiar way for developers to access help and reference material.
   - **Files**:
@@ -130,6 +137,7 @@ This plan outlines the development process for creating a functional terminal em
 ## Polish and Advanced Features
 
 - [ ] Step 13: Add Terminal Theming and Visual Polish
+
   - **Task**: Implement multiple terminal themes, improve visual styling, and add terminal effects
   - **Description**: Polish the visual experience with proper terminal theming, smooth animations, and retro terminal effects that enhance the 80s aesthetic.
   - **Files**:
@@ -140,6 +148,7 @@ This plan outlines the development process for creating a functional terminal em
   - **User Instructions**: Test different themes and visual effects
 
 - [ ] Step 14: Error Handling and User Experience Improvements
+
   - **Task**: Implement comprehensive error handling, command validation, and user feedback
   - **Description**: Ensure the terminal handles edge cases gracefully, provides helpful error messages, and guides users when they make mistakes.
   - **Files**:
@@ -176,14 +185,16 @@ This plan outlines the development process for creating a functional terminal em
 ## Testing Strategy
 
 Each step should be tested immediately after implementation:
+
 - **Manual Testing**: Verify the specific functionality works as expected
-- **Integration Testing**: Ensure new features work with existing mdbook functionality  
+- **Integration Testing**: Ensure new features work with existing mdbook functionality
 - **Cross-browser Testing**: Test in multiple browsers for compatibility
 - **Performance Testing**: Verify no significant performance degradation
 
 ## Success Criteria
 
 The implementation is complete when:
+
 1. Users can toggle between documentation and terminal modes seamlessly
 2. Terminal provides intuitive navigation through documentation structure
 3. All core Unix commands work as expected (ls, cd, cat, man, etc.)
