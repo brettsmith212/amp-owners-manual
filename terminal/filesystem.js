@@ -15,7 +15,7 @@ class VirtualFilesystem {
             path: '/'
         };
         this.currentPath = '/';
-        this.contentLoader = new ContentLoader();
+        this.contentLoader = null; // Will be initialized later
     }
 
     /**
@@ -23,6 +23,15 @@ class VirtualFilesystem {
      */
     async initialize() {
         console.log('Initializing virtual filesystem...');
+        
+        // Initialize content loader if available
+        if (typeof ContentLoader !== 'undefined') {
+            this.contentLoader = new ContentLoader();
+            console.log('ContentLoader initialized');
+        } else {
+            console.warn('ContentLoader not available, file content loading disabled');
+        }
+        
         this.createDocumentationStructure();
     }
 
@@ -185,18 +194,60 @@ class VirtualFilesystem {
      * Navigate to a directory
      */
     changeDirectory(path) {
-        // Will be implemented in Step 7
-        console.log('Directory change placeholder:', path);
-        return { success: false, message: 'Not implemented yet' };
+        // Handle special cases
+        if (path === '~' || path === '$HOME') {
+            this.currentPath = '/';
+            return { success: true, message: '' };
+        }
+        
+        const targetPath = this.resolvePath(path);
+        const pathInfo = this.getPathInfo(targetPath);
+        
+        if (!pathInfo) {
+            return { success: false, message: `cd: ${path}: No such file or directory` };
+        }
+        
+        if (pathInfo.type !== 'directory') {
+            return { success: false, message: `cd: ${path}: Not a directory` };
+        }
+        
+        this.currentPath = targetPath;
+        return { success: true, message: '' };
     }
 
     /**
      * List directory contents
      */
     listDirectory(path = null) {
-        // Will be implemented in Step 7
-        console.log('Directory listing placeholder:', path);
-        return [];
+        const targetPath = path ? this.resolvePath(path) : this.currentPath;
+        const dirInfo = this.getPathInfo(targetPath);
+        
+        if (!dirInfo) {
+            return { success: false, message: `ls: ${path || 'current directory'}: No such file or directory`, items: [] };
+        }
+        
+        if (dirInfo.type !== 'directory') {
+            return { success: false, message: `ls: ${path || 'current directory'}: Not a directory`, items: [] };
+        }
+        
+        const items = [];
+        for (const [name, info] of Object.entries(dirInfo.children)) {
+            items.push({
+                name: name,
+                type: info.type,
+                path: info.path,
+                isDirectory: info.type === 'directory'
+            });
+        }
+        
+        // Sort directories first, then files, both alphabetically
+        items.sort((a, b) => {
+            if (a.isDirectory && !b.isDirectory) return -1;
+            if (!a.isDirectory && b.isDirectory) return 1;
+            return a.name.localeCompare(b.name);
+        });
+        
+        return { success: true, message: '', items: items };
     }
 
     /**
@@ -208,11 +259,11 @@ class VirtualFilesystem {
             return null;
         }
 
-        if (fileInfo.sourcePath) {
+        if (fileInfo.sourcePath && this.contentLoader) {
             return await this.contentLoader.loadContent(fileInfo.sourcePath);
         }
 
-        return fileInfo.content || 'No content available';
+        return fileInfo.content || `Content for ${fileInfo.name} (content loading not yet implemented)`;
     }
 
     /**
@@ -244,14 +295,49 @@ class VirtualFilesystem {
      * Resolve relative path to absolute path
      */
     resolvePath(path) {
-        // Will be implemented in Step 7
+        if (!path || path === '.') {
+            return this.currentPath;
+        }
+        
+        if (path === '..') {
+            if (this.currentPath === '/') {
+                return '/';
+            }
+            const parts = this.currentPath.split('/').filter(p => p);
+            parts.pop();
+            return '/' + parts.join('/');
+        }
+        
         if (path.startsWith('/')) {
-            return path;
+            return this.normalizePath(path);
         }
         
         // Handle relative paths
         const current = this.currentPath === '/' ? '' : this.currentPath;
-        return `${current}/${path}`.replace(/\/+/g, '/');
+        const fullPath = `${current}/${path}`;
+        return this.normalizePath(fullPath);
+    }
+    
+    /**
+     * Normalize path by resolving . and .. components
+     */
+    normalizePath(path) {
+        const parts = path.split('/').filter(p => p);
+        const resolved = [];
+        
+        for (const part of parts) {
+            if (part === '.') {
+                continue;
+            } else if (part === '..') {
+                if (resolved.length > 0) {
+                    resolved.pop();
+                }
+            } else {
+                resolved.push(part);
+            }
+        }
+        
+        return '/' + resolved.join('/');
     }
 
     /**

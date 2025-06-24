@@ -11,7 +11,8 @@ class TerminalController {
         this.fitAddon = null;
         this.webLinksAddon = null;
         this.isInitialized = false;
-        this.currentDirectory = '/';
+        this.filesystem = null;
+        this.commandProcessor = null;
         this.commandHistory = [];
         this.historyIndex = -1;
         this.currentInput = '';
@@ -80,6 +81,9 @@ class TerminalController {
                 }
             });
 
+            // Initialize filesystem and command processor
+            await this.initializeFilesystem();
+
             // Set initialization flag
             this.isInitialized = true;
 
@@ -104,6 +108,20 @@ class TerminalController {
     }
 
     /**
+     * Initialize filesystem and command processor
+     */
+    async initializeFilesystem() {
+        // Initialize virtual filesystem
+        this.filesystem = new VirtualFilesystem();
+        await this.filesystem.initialize();
+        
+        // Initialize command processor
+        this.commandProcessor = new CommandProcessor(this.filesystem, this);
+        
+        console.log('Filesystem and command processor initialized');
+    }
+
+    /**
      * Set up terminal input handling
      */
     setupInputHandling() {
@@ -123,7 +141,11 @@ class TerminalController {
         
         // Handle special keys
         if (code === 13) { // Enter key
-            this.processCommand();
+            this.processCommand().catch(error => {
+                console.error('Command processing error:', error);
+                this.terminal.writeln(`Error: ${error.message}`);
+                this.showPrompt();
+            });
         } else if (code === 127) { // Backspace
             this.handleBackspace();
         } else if (code === 3) { // Ctrl+C
@@ -174,7 +196,7 @@ class TerminalController {
     /**
      * Process the current command
      */
-    processCommand() {
+    async processCommand() {
         this.terminal.writeln(''); // New line
         
         const command = this.currentInput.trim();
@@ -185,8 +207,8 @@ class TerminalController {
             this.commandHistory.push(command);
             this.historyIndex = this.commandHistory.length;
             
-            // Execute command (placeholder for now)
-            this.executeCommand(command);
+            // Execute command
+            await this.executeCommand(command);
         } else {
             // Empty command, just show prompt
             this.showPrompt();
@@ -196,23 +218,34 @@ class TerminalController {
     /**
      * Execute a command
      */
-    executeCommand(command) {
-        if (command === 'help') {
-            this.terminal.writeln('Available commands:');
-            this.terminal.writeln('  help    - Show this help message');
-            this.terminal.writeln('  clear   - Clear the terminal screen');
-            this.terminal.writeln('  exit    - Exit terminal mode');
-            this.terminal.writeln('');
-        } else if (command === 'clear') {
+    async executeCommand(command) {
+        // Handle built-in terminal commands first
+        if (command === 'clear') {
             this.clear();
+            this.showPrompt();
+            return;
         } else if (command === 'exit') {
             // Exit terminal mode
             const event = new CustomEvent('exitTerminal');
             document.dispatchEvent(event);
             return;
+        }
+        
+        // Use command processor for all other commands
+        if (this.commandProcessor) {
+            try {
+                const result = await this.commandProcessor.processCommand(command);
+                if (result.output) {
+                    this.terminal.writeln(result.output);
+                }
+                if (!result.success && result.output) {
+                    // Error message already included in output
+                }
+            } catch (error) {
+                this.terminal.writeln(`Error: ${error.message}`);
+            }
         } else {
-            this.terminal.writeln(`Command not found: ${command}`);
-            this.terminal.writeln('Type "help" for available commands.');
+            this.terminal.writeln('Terminal not properly initialized');
         }
         
         this.showPrompt();

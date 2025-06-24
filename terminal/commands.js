@@ -79,18 +79,45 @@ class CommandProcessor {
      * List directory contents
      */
     async listDirectory(args) {
-        // Will be implemented in Step 7
-        console.log('ls command placeholder:', args);
-        return { success: true, output: 'README.md\ngetting-started/' };
+        const path = args.length > 0 ? args[0] : null;
+        const result = this.filesystem.listDirectory(path);
+        
+        if (!result.success) {
+            return { success: false, output: result.message };
+        }
+        
+        if (result.items.length === 0) {
+            return { success: true, output: '' };
+        }
+        
+        // Format output like Unix ls
+        const output = result.items.map(item => {
+            return item.isDirectory ? `${item.name}/` : item.name;
+        }).join('\n');
+        
+        return { success: true, output: output };
     }
 
     /**
      * Change directory
      */
     async changeDirectory(args) {
-        // Will be implemented in Step 7
-        console.log('cd command placeholder:', args);
-        return { success: true, output: '' };
+        if (args.length === 0) {
+            // cd with no arguments goes to home (root)
+            const result = this.filesystem.changeDirectory('/');
+            return { 
+                success: result.success, 
+                output: result.message 
+            };
+        }
+        
+        const path = args[0];
+        const result = this.filesystem.changeDirectory(path);
+        
+        return { 
+            success: result.success, 
+            output: result.message 
+        };
     }
 
     /**
