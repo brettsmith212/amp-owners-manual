@@ -12,9 +12,11 @@ class CommandProcessor {
         this.commands = new Map();
         this.helpSystem = null;
         this.searchSystem = null;
+        this.manPageSystem = null;
         this.registerCommands();
         this.initializeHelp();
         this.initializeSearch();
+        this.initializeManPages();
     }
 
     /**
@@ -36,6 +38,17 @@ class CommandProcessor {
             this.searchSystem = new SearchSystem(this.filesystem);
         } else {
             console.warn('SearchSystem not available');
+        }
+    }
+
+    /**
+     * Initialize man page system
+     */
+    initializeManPages() {
+        if (typeof ManPageSystem !== 'undefined') {
+            this.manPageSystem = new ManPageSystem();
+        } else {
+            console.warn('ManPageSystem not available');
         }
     }
 
@@ -427,9 +440,30 @@ class CommandProcessor {
      * Show manual page
      */
     async showManPage(args) {
-        // Will be implemented in Step 11
-        console.log('man command placeholder:', args);
-        return { success: true, output: 'Manual page placeholder' };
+        if (args.length === 0) {
+            return { 
+                success: false, 
+                output: 'What manual page do you want?\nTry: man amp, man commands, man terminal' 
+            };
+        }
+
+        if (!this.manPageSystem) {
+            return { success: false, output: 'Manual system not available' };
+        }
+
+        const topic = args[0].toLowerCase();
+        const manPage = this.manPageSystem.getManPage(topic);
+
+        if (!manPage) {
+            const availablePages = this.manPageSystem.getAvailablePages();
+            return { 
+                success: false, 
+                output: `No manual entry for ${topic}\nAvailable pages: ${availablePages.join(', ')}` 
+            };
+        }
+
+        const formattedContent = this.manPageSystem.formatManPage(manPage);
+        return { success: true, output: formattedContent };
     }
 
     /**

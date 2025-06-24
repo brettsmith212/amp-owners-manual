@@ -114,7 +114,7 @@ This plan outlines the development process for creating a functional terminal em
 
 ## Documentation Integration
 
-- [ ] Step 11: Create Man Page System for Amp Documentation
+- [x] Step 11: Create Man Page System for Amp Documentation
 
   - **Task**: Implement `man amp`, `man commands` to show formatted documentation as man pages
   - **Description**: Create a traditional Unix man page experience for Amp documentation. This provides a familiar way for developers to access help and reference material.
@@ -123,7 +123,7 @@ This plan outlines the development process for creating a functional terminal em
     - `terminal/commands.js`: Add man command handler
     - `src/man-pages/`: Directory with formatted man page content
   - **Step Dependencies**: Step 10
-  - **User Instructions**: Test man pages: `man amp`, `man getting-started`
+  - **User Instructions**: Test man pages: `man amp`
 
 - [ ] Step 12: Implement Content Search and Filtering
   - **Task**: Create advanced search functionality across all documentation content
