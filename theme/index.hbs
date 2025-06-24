@@ -212,6 +212,7 @@
                     });
                 </script>
 
+                <!-- Documentation Content -->
                 <div id="content" class="content">
                     <main>
                         {{{ content }}}
@@ -234,6 +235,7 @@
                         <div style="clear: both"></div>
                     </nav>
                 </div>
+
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
@@ -250,6 +252,20 @@
                 {{/next}}
             </nav>
 
+        </div>
+
+        <!-- Terminal Interface -->
+        <div id="terminal-interface" class="terminal-interface hidden">
+            <div class="terminal-header">
+                <h1 class="terminal-title">{{ book_title }}</h1>
+                <button id="exit-terminal" class="terminal-exit-button" type="button" title="Exit Terminal Mode" aria-label="Exit Terminal Mode">
+                    <i class="fa fa-times"></i>
+                    <span>Exit Terminal</span>
+                </button>
+            </div>
+            <div id="terminal-container" class="terminal-container">
+                <!-- XTerm.js terminal will be mounted here -->
+            </div>
         </div>
 
         {{#if live_reload_endpoint}}

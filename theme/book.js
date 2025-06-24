@@ -518,6 +518,8 @@ aria-label="Show hidden lines"></button>';
     const html = document.querySelector('html');
     const terminalToggleButton = document.getElementById('terminal-toggle');
     const terminalToggleText = document.getElementById('terminal-toggle-text');
+    const terminalInterface = document.getElementById('terminal-interface');
+    const exitTerminalButton = document.getElementById('exit-terminal');
     
     // Check if terminal mode is enabled
     function isTerminalMode() {
@@ -537,22 +539,65 @@ aria-label="Show hidden lines"></button>';
         }
         
         if (enabled) {
+            // Enter terminal mode
             html.classList.add('terminal-mode');
-            terminalToggleText.textContent = 'Boring Mode';
-            terminalToggleButton.setAttribute('title', 'Exit Terminal Mode');
+            
+            if (terminalToggleText) {
+                terminalToggleText.textContent = 'Boring Mode';
+            }
+            if (terminalToggleButton) {
+                terminalToggleButton.setAttribute('title', 'Exit Terminal Mode');
+            }
+            
+            // Show terminal interface
+            if (terminalInterface) {
+                terminalInterface.classList.remove('hidden');
+            }
+            
+            // Initialize terminal emulator in next step
+            console.log('Terminal mode activated - ready for xterm.js initialization');
         } else {
+            // Exit terminal mode
             html.classList.remove('terminal-mode');
-            terminalToggleText.textContent = 'Terminal Mode';
-            terminalToggleButton.setAttribute('title', 'Toggle Terminal Mode');
+            
+            if (terminalToggleText) {
+                terminalToggleText.textContent = 'Terminal Mode';
+            }
+            if (terminalToggleButton) {
+                terminalToggleButton.setAttribute('title', 'Toggle Terminal Mode');
+            }
+            
+            // Hide terminal interface
+            if (terminalInterface) {
+                terminalInterface.classList.add('hidden');
+            }
+            
+            console.log('Terminal mode deactivated');
         }
     }
     
-    // Initialize terminal mode
+    // Initialize terminal mode state
     setTerminalMode(isTerminalMode());
     
-    // Toggle terminal mode on button click
-    terminalToggleButton.addEventListener('click', function() {
-        setTerminalMode(!isTerminalMode());
+    // Toggle terminal mode on main button click
+    if (terminalToggleButton) {
+        terminalToggleButton.addEventListener('click', function() {
+            setTerminalMode(!isTerminalMode());
+        });
+    }
+    
+    // Exit terminal mode on exit button click
+    if (exitTerminalButton) {
+        exitTerminalButton.addEventListener('click', function() {
+            setTerminalMode(false);
+        });
+    }
+    
+    // Keyboard shortcut to exit terminal mode (Escape key)
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && isTerminalMode()) {
+            setTerminalMode(false);
+        }
     });
 })();
 

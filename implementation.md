@@ -26,7 +26,7 @@ This plan outlines the development process for creating a functional terminal em
 
 ## Basic Terminal Interface
 
-- [ ] Step 3: Implement Terminal Container and Layout Switching
+- [x] Step 3: Implement Terminal Container and Layout Switching
   - **Task**: Create HTML structure for terminal mode and implement switching between documentation and terminal views
   - **Description**: Build the UI foundation that allows users to toggle between the normal documentation interface and the terminal interface. This includes hiding/showing appropriate elements.
   - **Files**:
@@ -34,7 +34,7 @@ This plan outlines the development process for creating a functional terminal em
     - `terminal.css`: Add terminal-specific layout and styling rules
     - `theme/book.js`: Update terminal toggle functionality to switch layouts
   - **Step Dependencies**: Step 2
-  - **User Instructions**: Test that clicking "Terminal Mode" shows/hides appropriate interface elements
+  - **User Instructions**: ✅ Test that clicking "Terminal Mode" shows/hides appropriate interface elements
 
 - [ ] Step 4: Initialize XTerm.js Terminal Instance
   - **Task**: Create and configure the xterm.js terminal with proper styling and addons

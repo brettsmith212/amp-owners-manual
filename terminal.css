@@ -1,6 +1,116 @@
 /* Terminal Mode - Retro 80s CRT Terminal Theme */
 
-/* Terminal toggle button styling */
+/* =============================================================================
+   LAYOUT SWITCHING - Simple overlay approach
+   ============================================================================= */
+
+/* Hide terminal interface by default */
+#terminal-interface {
+    display: none;
+}
+
+/* When terminal mode is active, show the terminal interface */
+html.terminal-mode #terminal-interface {
+    display: flex !important;
+}
+
+/* Prevent scrolling and ensure terminal takes full control */
+html.terminal-mode,
+html.terminal-mode body {
+    overflow: hidden !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* =============================================================================
+   TERMINAL INTERFACE LAYOUT
+   ============================================================================= */
+
+.terminal-interface {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #000000 !important;
+    z-index: 99999 !important;
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+
+
+.terminal-header {
+    background: #1a1a1a;
+    padding: 1rem 2rem;
+    border-bottom: 2px solid #00ff00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+}
+
+.terminal-title {
+    color: #00ff00;
+    font-family: "Courier New", "Lucida Console", monospace;
+    font-size: 1.5rem;
+    margin: 0;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.terminal-exit-button {
+    background: #000000;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-family: "Courier New", "Lucida Console", monospace;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.terminal-exit-button:hover {
+    background: #00ff00;
+    color: #000000;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.terminal-container {
+    flex: 1;
+    padding: 1rem;
+    background: #000000;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* XTerm.js styling overrides */
+.terminal-container .xterm {
+    font-family: "Courier New", "Lucida Console", monospace !important;
+}
+
+.terminal-container .xterm-viewport {
+    background-color: transparent !important;
+}
+
+.terminal-container .xterm-screen {
+    background-color: transparent !important;
+}
+
+/* =============================================================================
+   TERMINAL TOGGLE BUTTON STYLING
+   ============================================================================= */
 #terminal-toggle {
     display: flex;
     align-items: center;
